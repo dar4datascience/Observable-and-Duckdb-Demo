@@ -47,5 +47,12 @@
     "title": "Demoing duckdb with Observable",
     "section": "Use Parquet",
     "text": "Use Parquet\n\ndbClient3 = DuckDBClient.of({starwars: FileAttachment(\"starwars.parquet\")});\n\n\n\n\n\n\n\ndbClient3.query(\"SELECT * FROM starwars LIMIT 5\")"
+  },
+  {
+    "objectID": "quack.html#reading-remote-parquets",
+    "href": "quack.html#reading-remote-parquets",
+    "title": "Demoing duckdb with Observable",
+    "section": "Reading Remote Parquets",
+    "text": "Reading Remote Parquets\n\nfunction getRemoteFile(url) {\n  const baseURL = new URL(url);\n  return {\n    file: {\n      name: baseURL.pathname,\n      url: function () {\n        return url;\n      }\n    }\n  };\n}\n\n\n\n\n\n\n\ndb = DuckDBClient.of({\n  nba: getRemoteFile(\"https://llimllib.github.io/nba_data/players_2023.parquet\")\n})\n\n\n\n\n\n\n\nInputs.table(db.query(\"SELECT * FROM nba\"))"
   }
 ]

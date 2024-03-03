@@ -179,3 +179,28 @@ dbClient3 = DuckDBClient.of({starwars: FileAttachment("starwars.parquet")});
 dbClient3.query("SELECT * FROM starwars LIMIT 5")
 ```
 
+## Reading Remote Parquets
+
+```{ojs}
+function getRemoteFile(url) {
+  const baseURL = new URL(url);
+  return {
+    file: {
+      name: baseURL.pathname,
+      url: function () {
+        return url;
+      }
+    }
+  };
+}
+```
+
+```{ojs}
+db = DuckDBClient.of({
+  nba: getRemoteFile("https://llimllib.github.io/nba_data/players_2023.parquet")
+})
+```
+
+```{ojs}
+Inputs.table(db.query("SELECT * FROM nba"))
+```
