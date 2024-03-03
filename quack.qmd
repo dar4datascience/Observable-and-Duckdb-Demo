@@ -123,11 +123,15 @@ viewof skin_colorp = Inputs.checkbox(
 ```
 
 ```{ojs}
-queryResultp = dbClient.sql`
+queryResultp = dbClient.query(`
   SELECT *
   FROM starwars
-  WHERE mass > ${mass_min} AND skin_color IN (${skin_color.join(",")})
-`
+  WHERE mass > $1 AND skin_color IN ($2)
+`,
+[mass_min, skin_color.join(",")]
+)
+
+queryResultp
 ```
 
 ```{ojs}
