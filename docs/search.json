@@ -4,14 +4,14 @@
     "href": "quack.html",
     "title": "Demoing duckdb with Observable",
     "section": "",
-    "text": "Using the starwards R dataset, we will demonstrate how to use duckdb with Observable.\n\nlibrary(dplyr)\n\nzoomed_starwars &lt;- dplyr::starwars |&gt; \n  select(\n    name,\n    mass,\n    height,\n    homeworld,\n   # films,\n    skin_color\n  )\n\n\nojs_define(ojs_starwars = zoomed_starwars)\n\n\nstarwars = transpose(ojs_starwars)\nstarwars"
+    "text": "Using the starwards R dataset, we will demonstrate how to use duckdb with Observable.\n\nlibrary(dplyr)\nlibrary(duckdb)\n\nzoomed_starwars &lt;- dplyr::starwars |&gt; \n  select(\n    name,\n    mass,\n    height,\n    homeworld,\n   # films,\n    skin_color\n  )\n\n# create duckdb file\n\nquack_conn &lt;- dbConnect(\n  duckdb(),\n  \"starwars.duckdb\",\n)\n\ndbWriteTable(quack_conn,\n             \"starwars\",\n             zoomed_starwars,\n             overwrite = TRUE)\n\ndbExecute(quack_conn, \"-- write the result of a query to a Parquet file\n          \nCOPY (SELECT * FROM starwars) TO 'starwars.parquet' (COMPRESSION ZSTD);\")\n\n[1] 87\n\ndbDisconnect(quack_conn)\n\n\n\nojs_define(ojs_starwars = zoomed_starwars)\n\n\nstarwars = transpose(ojs_starwars)\nstarwars"
   },
   {
     "objectID": "quack.html#introduction",
     "href": "quack.html#introduction",
     "title": "Demoing duckdb with Observable",
     "section": "",
-    "text": "Using the starwards R dataset, we will demonstrate how to use duckdb with Observable.\n\nlibrary(dplyr)\n\nzoomed_starwars &lt;- dplyr::starwars |&gt; \n  select(\n    name,\n    mass,\n    height,\n    homeworld,\n   # films,\n    skin_color\n  )\n\n\nojs_define(ojs_starwars = zoomed_starwars)\n\n\nstarwars = transpose(ojs_starwars)\nstarwars"
+    "text": "Using the starwards R dataset, we will demonstrate how to use duckdb with Observable.\n\nlibrary(dplyr)\nlibrary(duckdb)\n\nzoomed_starwars &lt;- dplyr::starwars |&gt; \n  select(\n    name,\n    mass,\n    height,\n    homeworld,\n   # films,\n    skin_color\n  )\n\n# create duckdb file\n\nquack_conn &lt;- dbConnect(\n  duckdb(),\n  \"starwars.duckdb\",\n)\n\ndbWriteTable(quack_conn,\n             \"starwars\",\n             zoomed_starwars,\n             overwrite = TRUE)\n\ndbExecute(quack_conn, \"-- write the result of a query to a Parquet file\n          \nCOPY (SELECT * FROM starwars) TO 'starwars.parquet' (COMPRESSION ZSTD);\")\n\n[1] 87\n\ndbDisconnect(quack_conn)\n\n\n\nojs_define(ojs_starwars = zoomed_starwars)\n\n\nstarwars = transpose(ojs_starwars)\nstarwars"
   },
   {
     "objectID": "quack.html#regular-code",
@@ -33,5 +33,19 @@
     "title": "Demoing duckdb with Observable",
     "section": "Params",
     "text": "Params\n\nviewof mass_minp = Inputs.range(\n  [30, 150], \n  {value: 50, step: 1, label: \"Mass (min):\"}\n)\nviewof skin_colorp = Inputs.checkbox(\n  [\"fair\", \"gold\", \"white, blue\", \"white\", \"light\", \"white, red\"], \n  { value: [\"fair\", \"gold\"], \n    label: \"Skin color:\"\n  }\n)\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nqueryResultp = dbClient.query(`\n  SELECT *\n  FROM starwars\n  WHERE mass &gt; $1 AND skin_color IN ($2)\n`,\n[mass_min, skin_color.join(\",\")]\n)\n\nqueryResultp\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nPlot.plot({\n  marks: [\n    Plot.barY(queryResultp, {x: \"homeworld\", y: \"count_skin\", fill: \"red\"})\n  ]\n})"
+  },
+  {
+    "objectID": "quack.html#read-a-.duckdbfile-didnt-work",
+    "href": "quack.html#read-a-.duckdbfile-didnt-work",
+    "title": "Demoing duckdb with Observable",
+    "section": "Read a .duckdbfile didnt work",
+    "text": "Read a .duckdbfile didnt work\n\ndbClient2 = DuckDBClient.of({starwars: FileAttachment(\"starwars.duckdb\")});"
+  },
+  {
+    "objectID": "quack.html#use-parquet",
+    "href": "quack.html#use-parquet",
+    "title": "Demoing duckdb with Observable",
+    "section": "Use Parquet",
+    "text": "Use Parquet\n\ndbClient3 = DuckDBClient.of({starwars: FileAttachment(\"starwars.parquet\")});\n\n\n\n\n\n\n\ndbClient3.query(\"SELECT * FROM starwars LIMIT 5\")"
   }
 ]

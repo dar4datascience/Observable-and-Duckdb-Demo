@@ -26,6 +26,13 @@ zoomed_starwars <- dplyr::starwars |>
     skin_color
   )
 
+# create duckdb file
+
+quack_conn <- dbConnect(
+  duckdb(),
+  "starwars.duckdb"
+)
+
 
 ojs_define(ojs_starwars = zoomed_starwars)
 
