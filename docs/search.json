@@ -1,0 +1,30 @@
+[
+  {
+    "objectID": "quack.html",
+    "href": "quack.html",
+    "title": "Demoing duckdb with Observable",
+    "section": "",
+    "text": "Using the starwards R dataset, we will demonstrate how to use duckdb with Observable.\n\nlibrary(dplyr)\n\nzoomed_starwars &lt;- dplyr::starwars |&gt; \n  select(\n    name,\n    mass,\n    height,\n    homeworld,\n   # films,\n    skin_color\n  )\n\n\nojs_define(ojs_starwars = zoomed_starwars)\n\n\nstarwars = transpose(ojs_starwars)\nstarwars"
+  },
+  {
+    "objectID": "quack.html#introduction",
+    "href": "quack.html#introduction",
+    "title": "Demoing duckdb with Observable",
+    "section": "",
+    "text": "Using the starwards R dataset, we will demonstrate how to use duckdb with Observable.\n\nlibrary(dplyr)\n\nzoomed_starwars &lt;- dplyr::starwars |&gt; \n  select(\n    name,\n    mass,\n    height,\n    homeworld,\n   # films,\n    skin_color\n  )\n\n\nojs_define(ojs_starwars = zoomed_starwars)\n\n\nstarwars = transpose(ojs_starwars)\nstarwars"
+  },
+  {
+    "objectID": "quack.html#regular-code",
+    "href": "quack.html#regular-code",
+    "title": "Demoing duckdb with Observable",
+    "section": "Regular Code",
+    "text": "Regular Code\n\nviewof mass_min = Inputs.range(\n  [30, 150], \n  {value: 50, step: 1, label: \"Mass (min):\"}\n)\nviewof skin_color = Inputs.checkbox(\n  [\"fair\", \"gold\", \"white, blue\", \"white\", \"light\", \"white, red\"], \n  { value: [\"fair\", \"gold\"], \n    label: \"Skin color:\"\n  }\n)\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nfiltered = starwars.filter(function(character) {\n  return mass_min &lt; character.mass &&\n         skin_color.includes(character.skin_color);\n})\n\n\n\n\n\n\n\nInputs.table(filtered)"
+  },
+  {
+    "objectID": "quack.html#duckdb-try",
+    "href": "quack.html#duckdb-try",
+    "title": "Demoing duckdb with Observable",
+    "section": "Duckdb try",
+    "text": "Duckdb try\n\nimport {db, duckdb} from '@rlesur/quarto-duckdb'\n\nimport {DuckDBClient} from '@cmudig/duckdb'\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\ndbClient = DuckDBClient.of({starwars})\n\n\n\n\n\n\n\ndbClient.query(\"SELECT * FROM starwars LIMIT 5\")\n\n\n\n\n\n\n\nInputs.table(dbClient.describeColumns({ table: \"starwars\"}))\n\n\n\n\n\n\n\nqueryResult = dbClient.sql`SELECT\n  homeworld,\n  count(skin_color) as count_skin\nFROM\n  starwars\nGROUP BY\n  homeworld\n`\n\nqueryResult\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nPlot.plot({\n  marks: [\n    Plot.barY(queryResult, {x: \"homeworld\", y: \"count_skin\"})\n  ]\n})"
+  }
+]
