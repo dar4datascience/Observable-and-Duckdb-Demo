@@ -1,0 +1,110 @@
+---
+title: "Demoing duckdb with Observable"
+author: "Daniel Amieva Rodriguez"
+date: last-modified
+format:
+  html:
+    theme: cyborg
+    message: false
+    warning: false
+---
+
+## Introduction
+
+Using the starwards R dataset, we will demonstrate how to use duckdb with Observable.
+
+```{r}
+library(dplyr)
+
+zoomed_starwars <- dplyr::starwars |> 
+  select(
+    name,
+    mass,
+    height,
+    homeworld,
+   # films,
+    skin_color
+  )
+
+
+ojs_define(ojs_starwars = zoomed_starwars)
+
+```
+
+```{ojs}
+starwars = transpose(ojs_starwars)
+starwars
+```
+
+## Regular Code
+
+```{ojs}
+viewof mass_min = Inputs.range(
+  [30, 150], 
+  {value: 50, step: 1, label: "Mass (min):"}
+)
+viewof skin_color = Inputs.checkbox(
+  ["fair", "gold", "white, blue", "white", "light", "white, red"], 
+  { value: ["fair", "gold"], 
+    label: "Skin color:"
+  }
+)
+```
+
+
+```{ojs}
+filtered = starwars.filter(function(character) {
+  return mass_min < character.mass &&
+         skin_color.includes(character.skin_color);
+})
+```
+
+```{ojs}
+Inputs.table(filtered)
+```
+
+## Duckdb try
+
+```{ojs}
+import {db, duckdb} from '@rlesur/quarto-duckdb'
+
+import {DuckDBClient} from '@cmudig/duckdb'
+```
+
+
+```{ojs}
+dbClient = DuckDBClient.of({starwars})
+```
+
+```{ojs}
+dbClient.query("SELECT * FROM starwars LIMIT 5")
+```
+
+```{ojs}
+Inputs.table(dbClient.describeColumns({ table: "starwars"}))
+```
+
+```{ojs}
+queryResult = dbClient.sql`SELECT
+  homeworld,
+  count(skin_color) as count_skin
+FROM
+  starwars
+GROUP BY
+  homeworld
+`
+
+queryResult
+
+```
+
+```{ojs}
+Plot.plot({
+  marks: [
+    Plot.barY(queryResult, {x: "homeworld", y: "count_skin"})
+  ]
+})
+``` 
+
+
+
