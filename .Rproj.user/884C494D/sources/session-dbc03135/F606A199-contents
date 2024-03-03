@@ -107,4 +107,33 @@ Plot.plot({
 ``` 
 
 
+## Params
 
+```{ojs}
+viewof mass_minp = Inputs.range(
+  [30, 150], 
+  {value: 50, step: 1, label: "Mass (min):"}
+)
+viewof skin_colorp = Inputs.checkbox(
+  ["fair", "gold", "white, blue", "white", "light", "white, red"], 
+  { value: ["fair", "gold"], 
+    label: "Skin color:"
+  }
+)
+```
+
+```{ojs}
+queryResultp = dbClient.sql`
+  SELECT *
+  FROM starwars
+  WHERE mass > ${mass_min} AND skin_color IN (${skin_color.join(",")})
+`
+```
+
+```{ojs}
+Plot.plot({
+  marks: [
+    Plot.barY(queryResultp, {x: "homeworld", y: "count_skin", fill: "pink"})
+  ]
+})
+```

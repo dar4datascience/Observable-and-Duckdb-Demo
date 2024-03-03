@@ -26,5 +26,12 @@
     "title": "Demoing duckdb with Observable",
     "section": "Duckdb try",
     "text": "Duckdb try\n\nimport {db, duckdb} from '@rlesur/quarto-duckdb'\n\nimport {DuckDBClient} from '@cmudig/duckdb'\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\ndbClient = DuckDBClient.of({starwars})\n\n\n\n\n\n\n\ndbClient.query(\"SELECT * FROM starwars LIMIT 5\")\n\n\n\n\n\n\n\nInputs.table(dbClient.describeColumns({ table: \"starwars\"}))\n\n\n\n\n\n\n\nqueryResult = dbClient.sql`SELECT\n  homeworld,\n  count(skin_color) as count_skin\nFROM\n  starwars\nGROUP BY\n  homeworld\n`\n\nqueryResult\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nPlot.plot({\n  marks: [\n    Plot.barY(queryResult, {x: \"homeworld\", y: \"count_skin\"})\n  ]\n})"
+  },
+  {
+    "objectID": "quack.html#params",
+    "href": "quack.html#params",
+    "title": "Demoing duckdb with Observable",
+    "section": "Params",
+    "text": "Params\n\nviewof mass_minp = Inputs.range(\n  [30, 150], \n  {value: 50, step: 1, label: \"Mass (min):\"}\n)\nviewof skin_colorp = Inputs.checkbox(\n  [\"fair\", \"gold\", \"white, blue\", \"white\", \"light\", \"white, red\"], \n  { value: [\"fair\", \"gold\"], \n    label: \"Skin color:\"\n  }\n)\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nqueryResultp = dbClient.sql`\n  SELECT *\n  FROM starwars\n  WHERE mass &gt; ${mass_min} AND skin_color IN (${skin_color.join(\",\")})\n`\n\n\n\n\n\n\n\nPlot.plot({\n  marks: [\n    Plot.barY(queryResultp, {x: \"homeworld\", y: \"count_skin\", fill: \"pink\"})\n  ]\n})"
   }
 ]
