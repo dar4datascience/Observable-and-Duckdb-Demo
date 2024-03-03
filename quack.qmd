@@ -133,7 +133,7 @@ queryResultp = dbClient.sql`
 ```{ojs}
 Plot.plot({
   marks: [
-    Plot.barY(queryResultp, {x: "homeworld", y: "count_skin", fill: "pink"})
+    Plot.barY(queryResultp, {x: "homeworld", y: "count_skin", fill: "red"})
   ]
 })
 ```
